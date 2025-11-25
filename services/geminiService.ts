@@ -39,3 +39,44 @@ export const generateTeachingAssistance = async (prompt: string, contextData: st
     return "AI 服務暫時無法使用，請檢查網路連線或 API Key。";
   }
 };
+
+export const generateProjectImage = async (title: string, topic: string, description: string) => {
+  if (!apiKey) {
+    console.warn("No API Key provided for image generation.");
+    return null;
+  }
+
+  try {
+    // Using gemini-2.5-flash-image as it is the standard for generation tasks if Imagen is not explicitly available
+    const imagePrompt = `
+      A high-quality, modern, isometric 3D render or blueprint style illustration representing a high school technology project.
+      Project Title: ${title}
+      Theme/Topic: ${topic}
+      Description: ${description}
+      Style: Clean, futuristic, educational, bright lighting, tech workshop aesthetic.
+      No text on the image.
+    `;
+
+    const response = await ai.models.generateContent({
+      model: 'gemini-2.5-flash-image',
+      contents: {
+        parts: [
+          { text: imagePrompt }
+        ],
+      }
+    });
+
+    // Iterate through parts to find the image
+    if (response.candidates?.[0]?.content?.parts) {
+      for (const part of response.candidates[0].content.parts) {
+        if (part.inlineData && part.inlineData.data) {
+          return `data:image/png;base64,${part.inlineData.data}`;
+        }
+      }
+    }
+    return null;
+  } catch (error) {
+    console.error("Image Generation Error:", error);
+    return null;
+  }
+};
