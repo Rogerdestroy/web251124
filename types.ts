@@ -5,7 +5,8 @@ export enum ViewState {
   INVENTORY = 'INVENTORY',
   SAFETY = 'SAFETY',
   GALLERY = 'GALLERY',
-  ASSISTANT = 'ASSISTANT'
+  ASSISTANT = 'ASSISTANT',
+  ADMIN = 'ADMIN'
 }
 
 export interface InventoryItem {
