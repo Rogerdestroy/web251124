@@ -10,7 +10,7 @@ import {
   Settings2, Trash2, Edit, Eye, Filter,
   X, LayoutDashboard, BookOpen, Hammer, Images, MapPin, ChevronLeft, ChevronRight,
   TrendingUp, Download, ExternalLink, Zap, ArrowLeft, MoreVertical, GraduationCap,
-  Minus, Camera, QrCode, UploadCloud, Save, Megaphone, Loader2, Check, XCircle
+  Minus, Camera, QrCode, UploadCloud, Save, Megaphone, Loader2, Check, XCircle, Link
 } from 'lucide-react';
 import { BarChart, Bar, XAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts';
 
@@ -677,7 +677,19 @@ const ProjectsView = ({ projects, setProjects, isAdmin }: { projects: Project[],
   );
 };
 
-const InventoryView = ({ inventory, setInventory, isAdmin }: { inventory: InventoryItem[], setInventory: React.Dispatch<React.SetStateAction<InventoryItem[]>>, isAdmin: boolean }) => {
+const InventoryView = ({ 
+  inventory, 
+  setInventory, 
+  isAdmin, 
+  borrowFormUrl, 
+  setBorrowFormUrl 
+}: { 
+  inventory: InventoryItem[], 
+  setInventory: React.Dispatch<React.SetStateAction<InventoryItem[]>>, 
+  isAdmin: boolean,
+  borrowFormUrl: string,
+  setBorrowFormUrl: React.Dispatch<React.SetStateAction<string>>
+}) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [isScanModalOpen, setIsScanModalOpen] = useState(false);
   const [scannedItem, setScannedItem] = useState<InventoryItem | null>(null);
@@ -690,20 +702,6 @@ const InventoryView = ({ inventory, setInventory, isAdmin }: { inventory: Invent
     setInventory(prev => prev.map(item => 
       item.id === id ? { ...item, quantity: Math.max(0, item.quantity + delta) } : item
     ));
-  };
-
-  const handleScanMock = () => {
-    // Simulate finding a random item
-    const randomItem = inventory[Math.floor(Math.random() * inventory.length)];
-    setScannedItem(randomItem);
-  };
-
-  const handleScanAction = (action: 'borrow' | 'return') => {
-    if (scannedItem) {
-      handleUpdateStock(scannedItem.id, action === 'borrow' ? -1 : 1);
-      setScannedItem(null);
-      setIsScanModalOpen(false);
-    }
   };
 
   return (
@@ -786,7 +784,7 @@ const InventoryView = ({ inventory, setInventory, isAdmin }: { inventory: Invent
                           <button className="text-rose-600 hover:text-rose-800 p-1 bg-rose-50 rounded"><Trash2 size={16} /></button>
                         </div>
                       ) : (
-                        <button className="text-cyan-600 hover:text-cyan-800 font-bold text-xs border border-cyan-200 px-3 py-1 rounded hover:bg-cyan-50 transition-colors">
+                        <button onClick={() => setIsScanModalOpen(true)} className="text-cyan-600 hover:text-cyan-800 font-bold text-xs border border-cyan-200 px-3 py-1 rounded hover:bg-cyan-50 transition-colors">
                           登記
                         </button>
                       )}
@@ -805,8 +803,8 @@ const InventoryView = ({ inventory, setInventory, isAdmin }: { inventory: Invent
               
               <div className="flex items-start justify-between mb-6 relative z-10">
                 <div>
-                  <h3 className="font-bold text-xl font-heading mb-1">快速掃描登記</h3>
-                  <p className="text-cyan-100 text-sm opacity-90">使用平板或手機掃描材料 QR Code</p>
+                  <h3 className="font-bold text-xl font-heading mb-1">借用登記 QR Code</h3>
+                  <p className="text-cyan-100 text-sm opacity-90">手機掃描 QR Code 進行遠端借用登記</p>
                 </div>
                 <div className="bg-white/20 p-2.5 rounded-xl backdrop-blur-sm">
                   <div className="w-8 h-8 border-2 border-white/50 rounded flex items-center justify-center">
@@ -818,7 +816,7 @@ const InventoryView = ({ inventory, setInventory, isAdmin }: { inventory: Invent
                 onClick={() => setIsScanModalOpen(true)}
                 className="w-full py-3 bg-white text-cyan-700 font-bold rounded-xl hover:bg-cyan-50 transition-colors shadow-md relative z-10 flex items-center justify-center gap-2"
               >
-                 <Camera size={18}/> 開啟相機掃描
+                 <QrCode size={18}/> 顯示登記表單
               </button>
           </div>
 
@@ -843,31 +841,40 @@ const InventoryView = ({ inventory, setInventory, isAdmin }: { inventory: Invent
         </div>
       </div>
 
-      {/* Mock Scan Modal */}
+      {/* QR Code / Form Link Modal */}
       {isScanModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
-           <div className="bg-white rounded-2xl max-w-sm w-full p-6 text-center animate-in zoom-in">
-              <h3 className="font-bold text-lg mb-4">掃描 QR Code</h3>
-              <div className="w-full h-48 bg-black rounded-xl mb-4 flex items-center justify-center relative overflow-hidden">
-                 <div className="absolute inset-0 border-2 border-cyan-500 opacity-50 m-8 rounded-lg animate-pulse"></div>
-                 <span className="text-slate-500 text-xs">模擬相機畫面...</span>
+           <div className="bg-white rounded-2xl max-w-sm w-full p-8 text-center animate-in zoom-in relative">
+              <button onClick={() => setIsScanModalOpen(false)} className="absolute top-4 right-4 text-slate-400 hover:text-slate-600"><X size={20}/></button>
+              
+              <h3 className="font-bold text-lg mb-2 text-slate-800">設備借用登記表單</h3>
+              <p className="text-slate-500 text-xs mb-6">請使用手機相機掃描下方 QR Code</p>
+              
+              <div className="bg-white p-4 rounded-xl border-2 border-slate-100 inline-block mb-6 shadow-sm">
+                 <img 
+                   src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(borrowFormUrl)}`} 
+                   alt="Form QR Code" 
+                   className="w-48 h-48"
+                 />
               </div>
-              {!scannedItem ? (
-                 <button onClick={handleScanMock} className="w-full bg-cyan-500 text-white py-2 rounded-lg font-bold">模擬掃描成功</button>
-              ) : (
-                 <div className="space-y-4">
-                    <div className="bg-cyan-50 p-4 rounded-xl text-left">
-                       <p className="text-xs text-cyan-600 font-bold">已識別物品</p>
-                       <p className="font-bold text-lg">{scannedItem.name}</p>
-                       <p className="text-sm text-slate-500">目前庫存: {scannedItem.quantity} {scannedItem.unit}</p>
-                    </div>
-                    <div className="grid grid-cols-2 gap-3">
-                       <button onClick={() => handleScanAction('borrow')} className="bg-amber-400 text-cyan-900 py-2 rounded-lg font-bold">領取 (-1)</button>
-                       <button onClick={() => handleScanAction('return')} className="bg-emerald-500 text-white py-2 rounded-lg font-bold">歸還 (+1)</button>
-                    </div>
-                 </div>
+
+              <div className="bg-slate-50 p-3 rounded-lg border border-slate-200 text-left mb-4 break-all">
+                <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider mb-1">表單連結</p>
+                <a href={borrowFormUrl} target="_blank" rel="noopener noreferrer" className="text-cyan-600 text-xs hover:underline flex items-center gap-1">
+                   <Link size={10}/> {borrowFormUrl}
+                </a>
+              </div>
+
+              {isAdmin && (
+                <div className="mt-4 pt-4 border-t border-slate-100 text-left">
+                   <label className="text-xs font-bold text-slate-700 mb-1 block">設定表單網址 (僅管理員)</label>
+                   <input 
+                     value={borrowFormUrl} 
+                     onChange={(e) => setBorrowFormUrl(e.target.value)}
+                     className="w-full text-xs p-2 border border-slate-300 rounded focus:ring-2 focus:ring-cyan-500 outline-none"
+                   />
+                </div>
               )}
-              <button onClick={() => {setIsScanModalOpen(false); setScannedItem(null);}} className="mt-4 text-slate-400 text-sm">關閉</button>
            </div>
         </div>
       )}
@@ -1795,7 +1802,8 @@ const App: React.FC = () => {
   const [galleryTheme, setGalleryTheme] = useState({ title: '年度最佳作品展', desc: '展示優悉工坊 112 學年度生活科技專題競賽精選作品，激發你的創作靈感。' });
   const [incidents, setIncidents] = useState<IncidentReport[]>(INIT_INCIDENTS);
   const [safetyBanner, setSafetyBanner] = useState('本週工坊重點檢查項目：護目鏡配戴狀況 與 長髮需綁起。\n請各組組長務必在操作機具前檢查組員服裝儀容。');
-  
+  const [borrowFormUrl, setBorrowFormUrl] = useState('https://forms.google.com/example-borrow-form');
+
   // Schedule & Calendar State
   const [weeklySchedule, setWeeklySchedule] = useState<ClassSession[]>(INIT_WEEKLY_SCHEDULE);
   const [calendarEvents, setCalendarEvents] = useState<CalendarEvent[]>(INIT_CALENDAR_EVENTS);
@@ -1838,7 +1846,7 @@ const App: React.FC = () => {
       )}
       {currentView === ViewState.COURSES && <CourseView courses={courses} setCourses={setCourses} isAdmin={isAdmin} />}
       {currentView === ViewState.PROJECTS && <ProjectsView projects={projects} setProjects={setProjects} isAdmin={isAdmin} />}
-      {currentView === ViewState.INVENTORY && <InventoryView inventory={inventory} setInventory={setInventory} isAdmin={isAdmin} />}
+      {currentView === ViewState.INVENTORY && <InventoryView inventory={inventory} setInventory={setInventory} isAdmin={isAdmin} borrowFormUrl={borrowFormUrl} setBorrowFormUrl={setBorrowFormUrl} />}
       {currentView === ViewState.SAFETY && <SafetyView isAdmin={isAdmin} incidents={incidents} setIncidents={setIncidents} safetyBanner={safetyBanner} setSafetyBanner={setSafetyBanner} />}
       {currentView === ViewState.GALLERY && <GalleryView galleryItems={galleryItems} setGalleryItems={setGalleryItems} galleryTheme={galleryTheme} setGalleryTheme={setGalleryTheme} isAdmin={isAdmin} />}
       {currentView === ViewState.ASSISTANT && <AssistantView inventory={inventory} />}
