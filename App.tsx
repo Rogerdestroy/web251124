@@ -10,7 +10,8 @@ import {
   Settings2, Trash2, Edit, Eye, Filter,
   X, LayoutDashboard, BookOpen, Hammer, Images, MapPin, ChevronLeft, ChevronRight,
   TrendingUp, Download, ExternalLink, Zap, ArrowLeft, MoreVertical, GraduationCap,
-  Minus, Camera, QrCode, UploadCloud, Save, Megaphone, Loader2, Check, XCircle, Link
+  Minus, Camera, QrCode, UploadCloud, Save, Megaphone, Loader2, Check, XCircle, Link,
+  ArrowRight, Rocket, Star, Cpu
 } from 'lucide-react';
 import { BarChart, Bar, XAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts';
 
@@ -146,7 +147,111 @@ const INIT_CALENDAR_EVENTS: CalendarEvent[] = [
   { id: 'e3', date: '2023-11-02', title: '段考週', type: 'exam' },
 ];
 
-// --- Sub-Components ---
+// --- Official Landing Page Component ---
+const LandingPage = ({ onEnter }: { onEnter: () => void }) => {
+  return (
+    <div className="min-h-screen bg-slate-900 font-sans text-slate-100 overflow-x-hidden relative">
+      {/* Background Effects */}
+      <div className="absolute top-0 left-0 w-full h-full overflow-hidden z-0">
+        <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-cyan-900/30 rounded-full blur-[120px]"></div>
+        <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-amber-900/20 rounded-full blur-[120px]"></div>
+      </div>
+
+      {/* Navigation */}
+      <nav className="relative z-20 flex justify-between items-center px-8 py-6 max-w-7xl mx-auto">
+        <div className="flex items-center gap-3">
+          <div className="bg-gradient-to-br from-amber-400 to-amber-600 p-2 rounded-lg shadow-lg shadow-amber-500/20">
+            <Hammer className="text-cyan-950 w-6 h-6" />
+          </div>
+          <span className="text-2xl font-bold font-heading tracking-tight text-white">YUSI Craft</span>
+        </div>
+        <button 
+          onClick={onEnter}
+          className="bg-white/10 hover:bg-white/20 border border-white/20 backdrop-blur-sm px-6 py-2 rounded-full font-bold text-sm transition-all flex items-center gap-2"
+        >
+          登入系統 <ArrowRight size={16} />
+        </button>
+      </nav>
+
+      {/* Hero Section */}
+      <header className="relative z-10 pt-20 pb-32 px-8 text-center max-w-5xl mx-auto">
+        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-cyan-900/50 border border-cyan-700/50 text-cyan-300 text-xs font-bold uppercase tracking-widest mb-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
+          <Sparkles size={14} /> Empowering Future Makers
+        </div>
+        <h1 className="text-5xl md:text-7xl font-bold font-heading mb-8 leading-tight animate-in fade-in slide-in-from-bottom-8 duration-700 delay-100">
+          優悉工坊 <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-amber-400">教學平台</span>
+        </h1>
+        <p className="text-xl md:text-2xl text-slate-400 mb-12 max-w-3xl mx-auto leading-relaxed animate-in fade-in slide-in-from-bottom-8 duration-700 delay-200">
+          專為生活科技教育打造的全方位管理系統。整合課程教學、專題追蹤、設備庫存與安全認證，讓創意實作更安全、更高效。
+        </p>
+        <div className="flex flex-col md:flex-row gap-6 justify-center animate-in fade-in slide-in-from-bottom-8 duration-700 delay-300">
+          <button 
+            onClick={onEnter}
+            className="group relative px-8 py-4 bg-cyan-500 hover:bg-cyan-400 text-white font-bold text-lg rounded-xl shadow-xl shadow-cyan-500/30 transition-all hover:scale-105"
+          >
+            <span className="flex items-center gap-3">
+              進入教學平台 <Rocket className="group-hover:translate-x-1 transition-transform" />
+            </span>
+          </button>
+          <a href="#" className="px-8 py-4 bg-white/5 hover:bg-white/10 border border-white/10 text-white font-bold text-lg rounded-xl transition-all">
+            了解更多功能
+          </a>
+        </div>
+      </header>
+
+      {/* Stats Section */}
+      <section className="relative z-10 bg-slate-800/50 border-y border-white/5 backdrop-blur-sm">
+        <div className="max-w-7xl mx-auto px-8 py-12 grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+          {[
+            { label: '註冊學生', value: '150+', icon: Users },
+            { label: '專題作品', value: '300+', icon: Images },
+            { label: '教學課程', value: '12+', icon: BookOpen },
+            { label: '專業設備', value: '50+', icon: Cpu },
+          ].map((stat, i) => (
+            <div key={i} className="space-y-2">
+              <stat.icon className="w-8 h-8 mx-auto text-amber-400 mb-2" />
+              <div className="text-3xl font-bold text-white font-heading">{stat.value}</div>
+              <div className="text-sm text-slate-400 font-medium">{stat.label}</div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Features Grid */}
+      <section className="relative z-10 max-w-7xl mx-auto px-8 py-24">
+        <h2 className="text-3xl font-bold text-center mb-16 font-heading">為什麼選擇 YUSI Craft？</h2>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          {[
+            { title: '專題製作追蹤', desc: '從構想到成品，視覺化看板管理專案進度，結合 AI 輔助生成設計圖。', icon: Hammer, color: 'text-rose-400' },
+            { title: '智慧庫存管理', desc: '即時監控耗材數量，手機掃描 QR Code 快速登記借用，避免器材遺失。', icon: Box, color: 'text-amber-400' },
+            { title: '安全認證機制', desc: '落實工坊安全教育，記錄每位學生的機器操作權限與事故通報。', icon: ShieldAlert, color: 'text-emerald-400' },
+            { title: 'AI 學習助教', desc: '內建 Gemini AI 助教，隨時解答學生在機構設計與程式撰寫上的疑難雜症。', icon: Bot, color: 'text-cyan-400' },
+            { title: '數位作品展', desc: '打造線上作品集，完整記錄學生的創作歷程、設計圖與成果照片。', icon: Images, color: 'text-purple-400' },
+            { title: '教學日程管理', desc: '整合行事曆與課表，輕鬆掌握每週授課進度與重要活動。', icon: Calendar, color: 'text-blue-400' },
+          ].map((feature, i) => (
+            <div key={i} className="p-8 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 hover:border-cyan-500/30 transition-all group">
+              <div className={`w-14 h-14 rounded-xl bg-slate-800 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform ${feature.color}`}>
+                <feature.icon size={28} />
+              </div>
+              <h3 className="text-xl font-bold mb-3 font-heading text-slate-200">{feature.title}</h3>
+              <p className="text-slate-400 leading-relaxed">{feature.desc}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer className="relative z-10 border-t border-white/10 bg-slate-900 py-12 text-center text-slate-500 text-sm">
+        <div className="flex items-center justify-center gap-2 mb-4 text-slate-300 font-bold font-heading">
+          <Hammer size={20} className="text-amber-400" /> YUSI Craft
+        </div>
+        <p>&copy; 2023 YUSI Craft. All rights reserved. Designed for Technology Education.</p>
+      </footer>
+    </div>
+  );
+};
+
+// --- Sub-Components (Dashboard, etc.) ---
 
 const DashboardView = ({ 
   projects, 
@@ -1790,6 +1895,7 @@ const AdminView = ({
 // --- Main App Component ---
 
 const App: React.FC = () => {
+  const [showLanding, setShowLanding] = useState(true); // Control Landing Page View
   const [currentView, setView] = useState<ViewState>(ViewState.DASHBOARD);
   const [isAdmin, setIsAdmin] = useState(false);
   
@@ -1824,6 +1930,10 @@ const App: React.FC = () => {
     setIsAdmin(false);
     setView(ViewState.DASHBOARD);
   };
+
+  if (showLanding) {
+    return <LandingPage onEnter={() => setShowLanding(false)} />;
+  }
 
   return (
     <Layout 
@@ -1866,3 +1976,4 @@ const App: React.FC = () => {
 };
 
 export default App;
+    
